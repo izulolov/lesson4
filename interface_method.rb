@@ -139,10 +139,10 @@ class InterfaceMethod
       puts 'Сначала надо создать маршрут'
     else
       puts 'Выберите в какой маршрут хотите назначить поезд(введите индекс):'
-      @@routes.each_with_index { |route, index| puts "#{index + 1} - #{route}" }
+      @@routes.each_with_index { |route, index| puts "#{index + 1} -> #{route.from.name} - #{route.to.name}" }
       rt = gets.chomp.to_i
       if rt.between?(1, @@routes.length)
-        puts "Выберите какой поезд назначить на маршрут: #{@@routes[rt - 1].from.name} - #{@@routes[rt - 1].to.name} (введите индекс):"
+        puts "Выберите какой поезд назначить на маршрут: #{@@routes[rt - 1].from.name} - #{@@routes[rt - 1].to.name} (введите номер поезда):"
         @@trains.each_with_index { |train, index| puts "#{index + 1} - #{train.number}" }
         number = gets.chomp
         tr = @@trains.detect { |train| train.number == number }
@@ -236,7 +236,11 @@ class InterfaceMethod
       if station.nil?
         puts 'Такой станции нет'
       else
-        station.trains_in_station
+        if station.trains.length > 0
+          station.trains_in_station
+        else
+          puts "На станции #{station.name} поездов нет!"
+        end
       end
     end
   end
