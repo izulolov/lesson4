@@ -9,29 +9,21 @@ require_relative 'wagon_cargo'
 
 class InterfaceMethod
 
-  # Переменные класса
-  @@stations = []
-  @@trains = []
-  @@routes = []
-  @@trains_in_station = []
-
+  def initialize
+    @stations = []
+    @trains = []
+    @routes = []
+  end
   WAGON_TYPES = { 'Cargo' => WagonCargo, 'Passenger' => WagonPassenger }
   # Создать меню
   def menus
     puts 'Выберите команду:'
-    puts %(
-    0. Выход
-    1. Создать станцию
-    2. Создать поезд
-    3. Создать маршрут
-    4. Добавлять или удалять станцию
-    5. Назначать маршрут поезду
-    6. Добавлять вагоны к поезду
-    7. Отцеплять вагоны от поезда
-    8. Перемещать поезд по маршруту вперед и назад
-    9. Просматривать список станций
-    10. Cписок поездов на станции
-    )
+    puts %(    0. Выход
+    1. Создать станцию    2. Создать поезд    3. Создать маршрут
+    4. Добавлять или удалять станцию    5. Назначать маршрут поезду
+    6. Добавлять вагоны к поезду    7. Отцеплять вагоны от поезда
+    8. Перемещать поезд по маршруту вперед или назад    9. Просматривать список станций
+    10. Cписок поездов на станции)
   end
 
   # Создать станцию
@@ -39,7 +31,7 @@ class InterfaceMethod
     puts 'Введите название станции'
     name = gets.chomp
     if name.chars.all? { |ch| ch.downcase.ord >= 97 && ch.downcase.ord <= 122 } # Можно наверно еще с помощью регулярок, но я в данном этапе не стал заморачиватся
-      @@stations << Station.new(name)
+      @stations << Station.new(name)
       puts "Создана станция #{name}"
     else
       puts 'Ошибка! Название станции может состоять только из букв латинского языка. Попробуйте еще раз'
@@ -54,10 +46,10 @@ class InterfaceMethod
     select = gets.chomp.to_i
     case select
       when 1
-        @@trains << TrainPassenger.new(number)
+        @trains << TrainPassenger.new(number)
         puts "Создан пассажирский поезд с номером: #{number}"
       when 2
-        @@trains << TrainCargo.new(number)
+        @trains << TrainCargo.new(number)
         puts "Создан грузовой поезд с номером: #{number}"
       else
         puts 'Поезд не создан! Введите 1 чтобы создать пассажирский, 2 для грузогого'
@@ -66,23 +58,23 @@ class InterfaceMethod
 
   # Создать маршрут
   def create_route
-    if @@stations.length < 2
+    if @stations.length < 2
       puts 'Чтобы создать маршрут нужно создать хотябы две станции'
     else
       puts %(Какой маршрут создать?
       Начальную и конечную станцию в маршруте можете выбрать из списка ниже.
       Для этого введите название станции:)
-      @@stations.each_with_index { |station, index| puts "#{index + 1} -> #{station.name}" }
+      @stations.each_with_index { |station, index| puts "#{index + 1} -> #{station.name}" }
       print 'Введите название начальной станции:'
       name1 = gets.chomp
-      st1 = @@stations.detect { |name| name.name == name1 }
+      st1 = @stations.detect { |name| name.name == name1 }
       print 'Введите название конечной станции:'
       name2 = gets.chomp
-      st2 = @@stations.detect { |name| name.name == name2 }
+      st2 = @stations.detect { |name| name.name == name2 }
       if st1.nil? || st2.nil?
         puts 'Ошибка! Проверьте правильно ли ввели название станции. Попробуйте заново.'
       else
-        @@routes << Route.new(st1, st2)
+        @routes << Route.new(st1, st2)
         puts "Создан маршрут #{st1.name} - #{st2.name}"
       end
     end
@@ -90,33 +82,33 @@ class InterfaceMethod
 
   # Редактировать маршрут
   def edit_route
-    if !@@routes.empty?
+    if !@routes.empty?
       puts 'Выберите маршрут из списка ниже которую хотите редактировать (добавить/удалить станцию)'
-      @@routes.each_with_index { |route, index| puts "#{index + 1} -> #{route.from.name} - #{route.to.name}" }
+      @routes.each_with_index { |route, index| puts "#{index + 1} -> #{route.from.name} - #{route.to.name}" }
       rt = gets.chomp.to_i
-      if rt.between?(1, @@routes.length)
-        puts "Вы выбрали маршрут #{@@routes[rt - 1].from.name} - #{@@routes[rt - 1].to.name}"
+      if rt.between?(1, @routes.length)
+        puts "Вы выбрали маршрут #{@routes[rt - 1].from.name} - #{@routes[rt - 1].to.name}"
         puts 'Введите 1 чтобы добавить станцию, 2 - удалить'
         select = gets.chomp.to_i
         case select
           when 1
             puts 'Доступны следующие станции для добавления. Введите название станции из списка.'
-            @@stations.each_with_index { |station, index| puts "#{index + 1} -> #{station.name}" }
+            @stations.each_with_index { |station, index| puts "#{index + 1} -> #{station.name}" }
             name = gets.chomp
-            st = @@stations.detect { |station| station.name == name }
+            st = @stations.detect { |station| station.name == name }
             if !st.nil?
-              @@routes[rt - 1].add_station(st)
+              @routes[rt - 1].add_station(st)
               puts "Добавлена станция: #{st.name}"
             else
               puts "Ошибка! Не нашли станцию #{name}. Попробуйте заново"
             end
           when 2
             puts 'Какую станцию удалить? Введите название станции. Выберите из списка ниже:'
-            @@routes[rt - 1].show_stations
+            @routes[rt - 1].show_stations
             name = gets.chomp
-            st = @@stations.detect { |station| station.name == name }
+            st = @stations.detect { |station| station.name == name }
             if !st.nil?
-              @@routes[rt - 1].delete_station(st)
+              @routes[rt - 1].delete_station(st)
             else
               puts "Ошибка! Не нашли станцию #{name} для удаления. Попробуйте заново."
             end
@@ -133,22 +125,21 @@ class InterfaceMethod
 
   # Задать маршрут поезду
   def train_route
-    if @@trains.empty?
+    if @trains.empty?
       puts 'Сначала надо создать поезд'
-    elsif @@routes.empty?
+    elsif @routes.empty?
       puts 'Сначала надо создать маршрут'
     else
       puts 'Выберите в какой маршрут хотите назначить поезд(введите индекс):'
-      @@routes.each_with_index { |route, index| puts "#{index + 1} -> #{route.from.name} - #{route.to.name}" }
+      @routes.each_with_index { |route, index| puts "#{index + 1} -> #{route.from.name} - #{route.to.name}" }
       rt = gets.chomp.to_i
-      if rt.between?(1, @@routes.length)
-        puts "Выберите какой поезд назначить на маршрут: #{@@routes[rt - 1].from.name} - #{@@routes[rt - 1].to.name} (введите номер поезда):"
-        @@trains.each_with_index { |train, index| puts "#{index + 1} - #{train.number}" }
+      if rt.between?(1, @routes.length)
+        puts "Выберите какой поезд назначить на маршрут: #{@routes[rt - 1].from.name} - #{@routes[rt - 1].to.name} (введите номер поезда):"
+        @trains.each_with_index { |train, index| puts "#{index + 1} - #{train.number}" }
         number = gets.chomp
-        tr = @@trains.detect { |train| train.number == number }
+        tr = @trains.detect { |train| train.number == number }
         if !tr.nil?
-          tr.take_route(@@routes[rt - 1])
-          @@trains_in_station << tr
+          tr.take_route(@routes[rt - 1])
         else
           puts 'Ошибка! Неправильно выбрали индекс поезда!. Попробуйте еще раз'
         end
@@ -160,12 +151,12 @@ class InterfaceMethod
 
   # Добавить вагон
   def add_wagon
-    if @@trains.empty?
+    if @trains.empty?
       puts 'Сначала необходимо создать поезд'
     else
       puts 'К какому поезду добваить вагон? (введите номер)'
       number = gets.chomp
-      train = @@trains.detect { |train| train.number == number }
+      train = @trains.detect { |train| train.number == number }
       if train.nil?
         puts 'Поезда с таким номером нет'
       else
@@ -176,12 +167,12 @@ class InterfaceMethod
 
   # Удалить вагон
   def delet_wagon
-    if @@trains.empty?
+    if @trains.empty?
       puts 'Сначала необходимо создать поезд'
     else
       puts 'От какого поезда оцепить вагон? (введите номер)'
       number = gets.chomp
-      train = @@trains.detect { |train| train.number == number }
+      train = @trains.detect { |train| train.number == number }
       if train.nil?
         puts 'Поезда с таким номером нет'
       elsif train.all_wagon.empty?
@@ -195,10 +186,10 @@ class InterfaceMethod
   # Перемещать поезд по маршруту вперед или назад
   def move_to_next_or_prev_station
     puts 'Какими поездами вы можете двигать(то есть каким поездам назначено станция):'
-    @@trains_in_station.each { |train| puts "#{train.number} на станции #{(@@stations[train.station_index]).name}" }
+    @stations.each_index { |index| @stations[index].trains.each { |train| puts "На станции #{@stations[index].name} - поезд с номером № #{train.number}"}}
     puts 'Какой поезд хотите двигать? (введите номер)'
     number = gets.chomp
-    train = @@trains.detect { |train| train.number == number }
+    train = @trains.detect { |train| train.number == number }
     if train.nil?
       puts 'Поезда с таким номером нет'
     else
@@ -217,22 +208,22 @@ class InterfaceMethod
 
   # Список станции
   def list_station
-    if @@stations.empty?
+    if @stations.empty?
       puts 'Сначала надо создать станцию!'
     else
       puts 'Все станции:'
-      @@stations.each { |station| puts station.name }
+      @stations.each { |station| puts station.name }
     end
   end
 
   # Поезда на станции
   def trains_in_station
-    if @@stations.empty?
+    if @stations.empty?
       puts 'Сначала надо создать станцию!'
     else
       puts 'На какой станции?:'
       name = gets.chomp
-      station = @@stations.detect { |st| st.name == name }
+      station = @stations.detect { |st| st.name == name }
       if station.nil?
         puts 'Такой станции нет'
       else

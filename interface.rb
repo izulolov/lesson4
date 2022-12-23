@@ -1,62 +1,62 @@
 require_relative 'interface_method'
 
 class Interface
+  def run
+    interface_method_object = InterfaceMethod.new
 
-  interface_method_object = InterfaceMethod.new
+    loop do
+      interface_method_object.menus
+      print 'Введите номер команды: '
+      select = gets.chomp.to_i
+      case select
+        # Выход
+      when 0
+        puts 'До новых встреч!'
+        break
 
-  interface_method_object.menus
+      # Создать станцию
+      when 1
+        interface_method_object.create_stations
 
-loop do
-  print 'Введите номер команды: '
-  select = gets.chomp.to_i
-  case select
-    # Выход
-    when 0
-      puts 'До новых встреч!'
-      break
+      # Создать поезд
+      when 2
+        interface_method_object.create_trains
 
-    # Создать станцию
-    when 1
-      interface_method_object.create_stations
+      # Создать маршрут
+      when 3
+        interface_method_object.create_route
 
-    # Создать поезд
-    when 2
-      interface_method_object.create_trains
+      # Добавить или удалить станцию из маршрута
+      when 4
+        interface_method_object.edit_route
 
-    # Создать маршрут
-    when 3
-      interface_method_object.create_route
+      # Назначить маршрут поезду
+      when 5
+        interface_method_object.train_route
 
-    # Добавить или удалить станцию из маршрута
-    when 4
-      interface_method_object.edit_route
+      # Добавить вагон
+      when 6
+        interface_method_object.add_wagon
 
-    # Назначить маршрут поезду
-    when 5
-      interface_method_object.train_route
+      # Удалить вагон
+      when 7
+        interface_method_object.delet_wagon
 
-    # Добавить вагон
-    when 6
-      interface_method_object.add_wagon
+      # Перемещать поезд по маршруту вперед или назад
+      when 8
+        interface_method_object.move_to_next_or_prev_station
 
-    # Удалить вагон
-    when 7
-      interface_method_object.delet_wagon
+      # Список станции
+      when 9
+        interface_method_object.list_station
 
-    # Перемещать поезд по маршруту вперед или назад
-    when 8
-      interface_method_object.move_to_next_or_prev_station
+      # Список поездов на станции
+      when 10
+        interface_method_object.trains_in_station
 
-    # Список станции
-    when 9
-      interface_method_object.list_station
-
-    # Список поездов на станции
-    when 10
-      interface_method_object.trains_in_station
-
-    else
-      puts 'Надо выбрать один из предложенных вариантов!'
+      else
+        puts 'Надо выбрать один из предложенных вариантов!'
+      end
+    end
   end
-end
 end
